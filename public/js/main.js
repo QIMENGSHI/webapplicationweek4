@@ -22,19 +22,33 @@ searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('searchInput').value;
 
-    const response = await fetch(`/todos/${name}`);
     const todoList = document.getElementById('todoList');
     todoList.innerHTML = '';
 
-    if (response.ok) {
+    try {
+        const response = await fetch(`/todos/${name}`);
+        if (!response.ok) {
+            alert(await response.text()); // Show error if user not found
+            return;
+        }
+
         const user = await response.json();
-        user.todos.forEach((todo) => {
+        user.todos.forEach((todo, index) => {
             const li = document.createElement('li');
-            li.textContent = todo;
+            const todoLink = document.createElement('a');
+
+            todoLink.classList.add('delete-task');
+            todoLink.textContent = todo;
+            todoLink.href = '#'; // Make it clickable
+            todoLink.dataset.todoIndex = index; // Store index in a dataset attribute
+            todoLink.dataset.todo = todo; // Store todo text in a dataset attribute
+
+            li.appendChild(todoLink);
             todoList.appendChild(li);
         });
-    } else {
-        alert(await response.text());
+    } catch (error) {
+        console.error('Error fetching todos:', error);
+        alert('Something went wrong.');
     }
 });
 
@@ -55,9 +69,10 @@ deleteButton.addEventListener('click', async () => {
 
 // Delete Todo
 document.getElementById('todoList').addEventListener('click', async (e) => {
-    if (e.target.tagName === 'LI') {
+    if (e.target.classList.contains('delete-task')) {
+        e.preventDefault();
         const name = document.getElementById('searchInput').value;
-        const todo = e.target.textContent;
+        const todo = e.target.dataset.todo;
 
         const response = await fetch('/update', {
             method: 'PUT',
@@ -66,7 +81,12 @@ document.getElementById('todoList').addEventListener('click', async (e) => {
         });
 
         const message = await response.text();
+        if (!response.ok) {
+            alert(message);
+            return;
+        }
+
         alert(message);
-        e.target.remove();
+        e.target.parentElement.remove();
     }
 });

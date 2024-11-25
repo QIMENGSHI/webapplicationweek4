@@ -4,7 +4,11 @@ import fs from 'fs/promises';
 
 // Type Definitions
 type Todo = string;
-type User = { name: string; todos: Todo[] };
+type TUser = { 
+    name: string; 
+    todos: Todo[] 
+
+};
 
 // Initialize Express
 const app: Application = express();
@@ -15,7 +19,7 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // In-Memory Users
-let users: User[] = [];
+let users: TUser[] = [];
 
 // File Operations
 const loadData = async (): Promise<void> => {
@@ -99,3 +103,4 @@ app.put('/update', async (req: Request, res: Response): Promise<void> => {
 })();
 
 export default app;
+
