@@ -16,6 +16,8 @@ form.addEventListener('submit', async (e) => {
     document.getElementById('message').innerText = message;
 });
 
+const button = document.getElementById('submit-data');
+console.log(button);
 // Search Todos by User
 const searchForm = document.getElementById('searchForm');
 searchForm.addEventListener('submit', async (e) => {
