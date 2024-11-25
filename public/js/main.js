@@ -4,6 +4,7 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('userInput').value;
     const todo = document.getElementById('todoInput').value;
+    event.target.reset();
 
     const response = await fetch('/add', {
         method: 'POST',

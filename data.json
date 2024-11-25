@@ -6,5 +6,17 @@
       "buy food",
       "buy food"
     ]
+  },
+  {
+    "name": "Mengshi",
+    "todos": [
+      "buy food"
+    ]
+  },
+  {
+    "name": "Mattias",
+    "todos": [
+      "do homework"
+    ]
   }
 ]
