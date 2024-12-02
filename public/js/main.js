@@ -73,6 +73,7 @@ document.getElementById('todoList').addEventListener('click', async (e) => {
         e.preventDefault();
         const name = document.getElementById('searchInput').value;
         const todo = e.target.dataset.todo;
+        const checked = e.target.checked;
 
         const response = await fetch('/update', {
             method: 'PUT',

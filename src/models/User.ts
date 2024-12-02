@@ -1,27 +1,23 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
-// Todo interface and schema
-interface ITodo {
-  todo: string;
-  checked?: boolean;
+export interface ITodo {
+    todo: string;
+    checked: boolean;
 }
 
-const TodoSchema: Schema = new Schema<ITodo>({
-  todo: { type: String, required: true },
-  checked: { type: Boolean, default: false },
-});
-
-// User interface and schema
-interface IUser extends Document {
-  name: string;
-  todos: Types.DocumentArray<ITodo>;
+export interface IUser extends Document {
+    name: string;
+    todos: ITodo[];
 }
 
-const UserSchema: Schema = new Schema<IUser>({
-  name: { type: String, required: true },
-  todos: { type: [TodoSchema], default: [] },
+const TodoSchema = new Schema<ITodo>({
+    todo: { type: String, required: true },
+    checked: { type: Boolean, default: false },
 });
 
-const User = mongoose.model<IUser>('User', UserSchema);
+const UserSchema = new Schema<IUser>({
+    name: { type: String, required: true },
+    todos: { type: [TodoSchema], default: [] },
+});
 
-export default User;
+export const User = mongoose.model<IUser>('User', UserSchema);

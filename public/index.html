@@ -4,28 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet" />
   </head>
   <body>
-    <h1>Todo App</h1>
+    <div class="container">
+      <h1>Todo App</h1>
+      <!-- Form to Add Todo -->
+      <form id="todoForm">
+        <input id="userInput" placeholder="Enter your name" required />
+        <input id="todoInput" placeholder="Enter a todo" required />
+        <button class="btn" type="submit" id="submit-data">Add Todo</button>
+      </form>
+      <p id="message"></p>
 
-    <!-- Form to Add Todo -->
-    <form id="todoForm">
-      <input id="userInput" placeholder="Enter your name" required />
-      <input id="todoInput" placeholder="Enter a todo" required />
-      <button type="submit" id="submit-data">Submit</button>
-    </form>
-    <p id="message"></p>
-
-    <!-- Form to Search User -->
-    <form id="searchForm">
-      <input id="searchInput" placeholder="Search user" required />
-      <button id="search" type="submit">Search</button>
-    </form>
-    <ul id="todoList"></ul>
-    
-
-    <button id="deleteUser">Delete User</button>
-
+      <!-- Form to Search User -->
+      <form id="searchForm">
+        <input id="searchInput" placeholder="Search user" required />
+        <button class="btn" id="search" type="submit">Search</button>
+      </form>
+      <ul id="todoList"></ul>
+    </div>
     <script src="./js/main.js"></script>
   </body>
-</html>
+</html

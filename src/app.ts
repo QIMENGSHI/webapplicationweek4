@@ -2,15 +2,38 @@ import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs/promises';
 import mongoose, { Connection } from 'mongoose';
+import { User } from './models/User';
 
 
-const mongoDB: string = 'mongodb://127.0.0.1:27017/my_database';
+const mongoDB: string = 'mongodb://127.0.0.1:27017/testdb';
+
+console.log('Connecting to MongoDB...');
 
 mongoose.connect(mongoDB)
+mongoose.connection.on('open', function (ref) {
+    console.log('Connected to mongo server.');
+
+    mongoose.connection.db?.listCollections().toArray().then((names: any[]) => {
+        console.log(names);
+    }).catch((err: any) => {
+        console.error('Error listing collections:', err);
+    });
+});
+
+mongoose.connection.on('error', function (err) {
+    console.error('MongoDB connection error:', err);
+});
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection
 db.on("error", console.error.bind(console,"MongoDB connection error:"))
-
+User.create({ name: "John", todos: [{ todo: "Buy milk", checked: false }] })
+    .then(user => {
+        console.log('User created:', user);
+    })
+    .catch(err => {
+        console.error(err);
+    });
+console.log('Connected to MongoDB');
 // Type Definitions
 // type Todo = string;
 // type TUser = { 
@@ -55,55 +78,111 @@ app.use(express.static('public'));
 // Routes
 app.post('/add', async (req: Request, res: Response): Promise<void> => {
     const { name, todo }: { name: string; todo: string } = req.body;
-    let user = users.find((u) => u.name === name);
+    try {
+        let user = await User.findOne({name})
+        if (!user) {
+            user = new User({name, todos: [{todo, checked: false}]});
+        } else {
+            user.todos.push({todo, checked: false});
 
-    if (user) {
-        user.todos.push(todo);
-    } else {
-        user = { name, todos: [todo] };
-        users.push(user);
+        }
+        await user.save();
+        res.status(200).send(`Todo added successfully for user ${name}`);
+    } catch (error) {
+        res.status(500).send('Error adding todo');
     }
+    // const { name, todo }: { name: string; todo: string } = req.body;
+    // let user = users.find((u) => u.name === name);
 
-    await saveData();
-    res.send(`Todo added successfully for user ${name}`);
+    // if (user) {
+    //     user.todos.push(todo);
+    // } else {
+    //     user = { name, todos: [todo] };
+    //     users.push(user);
+    // }
+
+    // await saveData();
+    // res.send(`Todo added successfully for user ${name}`);
 });
 
-app.get('/todos/:id', (req: Request, res: Response): void => {
-    const { id } = req.params;
-    const user = users.find((u) => u.name === id);
-
-    if (user) {
+app.get('/todos/:name', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const user = await User.findOne({name: req.params.name})
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
         res.json(user);
-    } else {
-        res.status(404).send('User not found');
+        
+    } catch (error) {
+        res.status(500).send('Error fetching todos');
     }
+    // const { id } = req.params;
+    // const user = users.find((u) => u.name === id);
+
+    // if (user) {
+    //     res.json(user);
+    // } else {
+    //     res.status(404).send('User not found');
+    // }
 });
 
 app.delete('/delete', async (req: Request, res: Response): Promise<void> => {
-    const { name }: { name: string } = req.body;
-    const index = users.findIndex((u) => u.name === name);
+    const { name } = req.body;
 
-    if (index > -1) {
-        users.splice(index, 1);
-        await saveData();
+    try {
+        await User.deleteOne({ name });
         res.send('User deleted successfully');
-    } else {
-        res.status(404).send('User not found');
+    } catch (error) {
+        res.status(500).send('Error deleting user');
     }
+    // const { name }: { name: string } = req.body;
+    // const index = users.findIndex((u) => u.name === name);
+
+    // if (index > -1) {
+    //     users.splice(index, 1);
+    //     await saveData();
+    //     res.send('User deleted successfully');
+    // } else {
+    //     res.status(404).send('User not found');
+    // }
 });
 
 app.put('/update', async (req: Request, res: Response): Promise<void> => {
-    const { name, todo }: { name: string; todo: string } = req.body;
-    const user = users.find((u) => u.name === name);
+    const { name, todo, checked, delete: isDelete } = req.body;
 
-    if (user) {
-        user.todos = user.todos.filter((t) => t !== todo);
-        await saveData();
-        res.send('Todo deleted successfully');
-    } else {
-        res.status(404).send('User not found');
+    try {
+        const user = await User.findOne({ name });
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+
+        if (isDelete) {
+            // Remove the todo
+            user.todos = user.todos.filter((t) => t.todo !== todo);
+            await user.save();
+            res.send('Todo deleted successfully');
+            return;
+        } else {
+            // Update the "checked" status
+            const todoItem = user.todos.find((t) => t.todo === todo);
+            if (!todoItem) {
+                res.status(404).send('Todo not found');
+                return;
+            }
+
+            todoItem.checked = checked;
+            await user.save();
+            res.send('Todo updated successfully');
+            return;
+        }
+    } catch (error) {
+        res.status(500).send('Error updating or deleting todo');
     }
 });
+
+    
 
 // Initialize File and Load Data
 // (async () => {
