@@ -9,15 +9,15 @@ const mongoDB: string = 'mongodb://127.0.0.1:27017/my_database';
 mongoose.connect(mongoDB)
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection
-
+db.on("error", console.error.bind(console,"MongoDB connection error:"))
 
 // Type Definitions
-type Todo = string;
-type TUser = { 
-    name: string; 
-    todos: Todo[] 
+// type Todo = string;
+// type TUser = { 
+//     name: string; 
+//     todos: Todo[] 
 
-};
+// };
 
 // Initialize Express
 const app: Application = express();
@@ -28,29 +28,29 @@ app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // In-Memory Users
-let users: TUser[] = [];
+// let users: TUser[] = [];
 
 // File Operations
-const loadData = async (): Promise<void> => {
-    try {
-        const data = await fs.readFile('data.json', 'utf-8');
-        users = JSON.parse(data);
-    } catch {
-        users = [];
-    }
-};
+// const loadData = async (): Promise<void> => {
+//     try {
+//         const data = await fs.readFile('data.json', 'utf-8');
+//         users = JSON.parse(data);
+//     } catch {
+//         users = [];
+//     }
+// };
 
-const saveData = async (): Promise<void> => {
-    await fs.writeFile('data.json', JSON.stringify(users, null, 2));
-};
+// const saveData = async (): Promise<void> => {
+//     await fs.writeFile('data.json', JSON.stringify(users, null, 2));
+// };
 
-const initFile = async (): Promise<void> => {
-    try {
-        await fs.access('data.json');
-    } catch {
-        await fs.writeFile('data.json', '[]');
-    }
-};
+// const initFile = async (): Promise<void> => {
+//     try {
+//         await fs.access('data.json');
+//     } catch {
+//         await fs.writeFile('data.json', '[]');
+//     }
+// };
 
 // Routes
 app.post('/add', async (req: Request, res: Response): Promise<void> => {
@@ -106,10 +106,10 @@ app.put('/update', async (req: Request, res: Response): Promise<void> => {
 });
 
 // Initialize File and Load Data
-(async () => {
-    await initFile();
-    await loadData();
-})();
+// (async () => {
+//     await initFile();
+//     await loadData();
+// })();
 
 export default app;
 
