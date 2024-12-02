@@ -148,8 +148,8 @@ app.delete('/delete', async (req: Request, res: Response): Promise<void> => {
     // }
 });
 
-app.put('/update', async (req: Request, res: Response): Promise<void> => {
-    const { name, todo, checked, delete: isDelete } = req.body;
+app.delete('/update', async (req: Request, res: Response): Promise<void> => {
+    const { name, todo } = req.body;
 
     try {
         const user = await User.findOne({ name });
@@ -158,29 +158,44 @@ app.put('/update', async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        if (isDelete) {
             // Remove the todo
             user.todos = user.todos.filter((t) => t.todo !== todo);
             await user.save();
             res.send('Todo deleted successfully');
             return;
-        } else {
-            // Update the "checked" status
-            const todoItem = user.todos.find((t) => t.todo === todo);
-            if (!todoItem) {
-                res.status(404).send('Todo not found');
-                return;
-            }
-
-            todoItem.checked = checked;
-            await user.save();
-            res.send('Todo updated successfully');
-            return;
-        }
+        
     } catch (error) {
         res.status(500).send('Error updating or deleting todo');
     }
 });
+
+app.put('/updateTodo', async (req: Request, res: Response): Promise<void> => {
+    const { name, todo, checked} = req.body;
+    try {
+        const user = await User.findOne({ name });
+        if (!user) {
+            res.status(404).send('User not found');
+            return;
+        }
+
+            // update the checked status
+            user.todos = user.todos.map((todo1) => {
+                if (todo1.todo === todo) {
+                    todo1.checked = checked;
+                }
+                return todo1;
+            });
+            await user.save();
+            res.status(200).send('Todo updated successfully');
+            return; 
+        
+    } catch (error) {
+        res.status(500).send('Error updating or deleting todo');
+    }
+
+})
+    
+
 
     
 

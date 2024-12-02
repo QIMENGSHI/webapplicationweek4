@@ -4,7 +4,7 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('userInput').value;
     const todo = document.getElementById('todoInput').value;
-    event.target.reset();
+    e.target.reset();
 
     const response = await fetch('/add', {
         method: 'POST',
@@ -17,40 +17,6 @@ form.addEventListener('submit', async (e) => {
 });
 
 // Search Todos by User
-// const searchForm = document.getElementById('searchForm');
-// searchForm.addEventListener('submit', async (e) => {
-//     e.preventDefault();
-//     const name = document.getElementById('searchInput').value;
-
-//     const todoList = document.getElementById('todoList');
-//     todoList.innerHTML = '';
-
-//     try {
-//         const response = await fetch(`/todos/${name}`);
-//         if (!response.ok) {
-//             alert(await response.text()); // Show error if user not found
-//             return;
-//         }
-
-//         const user = await response.json();
-//         user.todos.forEach((todo, index) => {
-//             const li = document.createElement('li');
-//             const todoLink = document.createElement('a');
-
-//             todoLink.classList.add('delete-task');
-//             todoLink.textContent = todo;
-//             todoLink.href = '#'; // Make it clickable
-//             todoLink.dataset.todoIndex = index; // Store index in a dataset attribute
-//             todoLink.dataset.todo = todo; // Store todo text in a dataset attribute
-
-//             li.appendChild(todoLink);
-//             todoList.appendChild(li);
-//         });
-//     } catch (error) {
-//         console.error('Error fetching todos:', error);
-//         alert('Something went wrong.');
-//     }
-// });
 const searchForm = document.getElementById('searchForm');
 searchForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -62,27 +28,24 @@ searchForm.addEventListener('submit', async (e) => {
     try {
         const response = await fetch(`/todos/${name}`);
         if (!response.ok) {
-            alert(await response.text());
+            alert(await response.text()); // Show error if user not found
             return;
         }
-
+        console.log(response);
+        
         const user = await response.json();
-        user.todos.forEach((todo) => {
+        console.log(user);
+        user.todos.forEach((todo, index) => {
             const li = document.createElement('li');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.classList.add('checkBoxes');
-            checkbox.dataset.todo = todo.todo;
-            checkbox.checked = todo.checked;
+            const todoLink = document.createElement('a');
 
-            const deleteLink = document.createElement('a');
-            deleteLink.classList.add('delete-task');
-            deleteLink.textContent = todo.todo;
-            deleteLink.href = '#';
-            deleteLink.dataset.todo = todo.todo;
+            todoLink.classList.add('delete-task');
+            todoLink.textContent = todo.todo;
+            todoLink.href = '#'; // Make it clickable
+            todoLink.dataset.todoIndex = index; // Store index in a dataset attribute
+            todoLink.dataset.todo = todo.todo; // Store todo text in a dataset attribute
 
-            li.appendChild(checkbox);
-            li.appendChild(deleteLink);
+            li.appendChild(todoLink);
             todoList.appendChild(li);
         });
     } catch (error) {
@@ -90,6 +53,45 @@ searchForm.addEventListener('submit', async (e) => {
         alert('Something went wrong.');
     }
 });
+// const searchForm = document.getElementById('searchForm');
+// searchForm.addEventListener('submit', async (e) => {
+//     e.preventDefault();
+//     const name = document.getElementById('searchInput').value;
+
+//     const todoList = document.getElementById('todoList');
+//     todoList.innerHTML = '';
+
+//     try {
+//         const response = await fetch(`/todos/${name}`);
+//         if (!response.ok) {
+//             alert(await response.text());
+//             return;
+//         }
+
+//         const user = await response.json();
+//         user.todos.forEach((todo) => {
+//             const li = document.createElement('li');
+//             const checkbox = document.createElement('input');
+//             checkbox.type = 'checkbox';
+//             checkbox.classList.add('checkBoxes');
+//             checkbox.dataset.todo = todo.todo;
+//             checkbox.checked = todo.checked;
+
+//             const deleteLink = document.createElement('a');
+//             deleteLink.classList.add('delete-task');
+//             deleteLink.textContent = todo.todo;
+//             deleteLink.href = '#';
+//             deleteLink.dataset.todo = todo.todo;
+
+//             li.appendChild(checkbox);
+//             li.appendChild(deleteLink);
+//             todoList.appendChild(li);
+//         });
+//     } catch (error) {
+//         console.error('Error fetching todos:', error);
+//         alert('Something went wrong.');
+//     }
+// });
 
 // Delete User
 const deleteButton = document.getElementById('deleteUser');
@@ -108,12 +110,13 @@ deleteButton.addEventListener('click', async () => {
 
 // Delete Todo
 document.getElementById('todoList').addEventListener('click', async (e) => {
+    console.log("hello 1");
     if (e.target.classList.contains('delete-task')) {
         e.preventDefault();
         const name = document.getElementById('searchInput').value;
         const todo = e.target.dataset.todo;
         const checked = e.target.checked;
-
+console.log("hello");
         const response = await fetch('/update', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
