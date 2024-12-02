@@ -21,4 +21,4 @@ const UserSchema = new Schema<IUser>({
 });
 
 // Ensure the collection name matches "users"
-export const User = mongoose.model<IUser>('User', UserSchema, 'users'); // Explicitly specify the collection name
+export const User = mongoose.model<IUser>('User', UserSchema); // Explicitly specify the collection name
