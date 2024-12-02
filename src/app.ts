@@ -26,14 +26,14 @@ mongoose.connection.on('error', function (err) {
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection
 db.on("error", console.error.bind(console,"MongoDB connection error:"))
-User.create({ name: "John", todos: [{ todo: "Buy milk", checked: false }] })
-    .then(user => {
-        console.log('User created:', user);
-    })
-    .catch(err => {
-        console.error(err);
-    });
-console.log('Connected to MongoDB');
+// User.create({ name: "John", todos: [{ todo: "Buy milk", checked: false }] })
+//     .then(user => {
+//         console.log('User created:', user);
+//     })
+//     .catch(err => {
+//         console.error(err);
+//     });
+// console.log('Connected to MongoDB');
 // Type Definitions
 // type Todo = string;
 // type TUser = { 
