@@ -1,6 +1,15 @@
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs/promises';
+import mongoose, { Connection } from 'mongoose';
+
+
+const mongoDB: string = 'mongodb://127.0.0.1:27017/my_database';
+
+mongoose.connect(mongoDB)
+mongoose.Promise = Promise
+const db: Connection = mongoose.connection
+
 
 // Type Definitions
 type Todo = string;
