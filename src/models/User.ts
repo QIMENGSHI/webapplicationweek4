@@ -20,4 +20,5 @@ const UserSchema = new Schema<IUser>({
     todos: { type: [TodoSchema], default: [] },
 });
 
-export const User = mongoose.model<IUser>('User', UserSchema);
+// Ensure the collection name matches "users"
+export const User = mongoose.model<IUser>('User', UserSchema, 'users'); // Explicitly specify the collection name
