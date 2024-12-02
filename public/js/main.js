@@ -1,3 +1,4 @@
+
 // Add Todo
 const form = document.getElementById('todoForm');
 form.addEventListener('submit', async (e) => {
@@ -38,14 +39,32 @@ searchForm.addEventListener('submit', async (e) => {
         user.todos.forEach((todo, index) => {
             const li = document.createElement('li');
             const todoLink = document.createElement('a');
-
+            
             todoLink.classList.add('delete-task');
             todoLink.textContent = todo.todo;
             todoLink.href = '#'; // Make it clickable
             todoLink.dataset.todoIndex = index; // Store index in a dataset attribute
             todoLink.dataset.todo = todo.todo; // Store todo text in a dataset attribute
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.classList.add('checkBoxes');
+            checkbox.dataset.todo = todo.todo;
+            checkbox.checked = todo.checked;
 
+            // const checkbox = document.createElement('input');
+            // checkbox.type = 'checkbox';
+            // checkbox.classList.add('checkBoxes');
+            // checkbox.dataset.todo = todo.todo;
+            // checkbox.setAttribute("id", "myCheckbox");
+            // checkbox.dataset.todoIndex = index; // Store index in a dataset attribute
+            // checkbox.checked = todo.checked;
+            // checkbox.style.border = "1px solid #000";
+            // checkbox.style.backgroundColor = "red";
+        
+            li.appendChild(checkbox);
             li.appendChild(todoLink);
+            
             todoList.appendChild(li);
         });
     } catch (error) {
@@ -94,31 +113,31 @@ searchForm.addEventListener('submit', async (e) => {
 // });
 
 // Delete User
-const deleteButton = document.getElementById('deleteUser');
-deleteButton.addEventListener('click', async () => {
-    const name = document.getElementById('searchInput').value;
+// const deleteButton = document.getElementById('deleteUser');
+// deleteButton.addEventListener('click', async () => {
+//     const name = document.getElementById('searchInput').value;
 
-    const response = await fetch('/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-    });
+//     const response = await fetch('/delete', {
+//         method: 'DELETE',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ name }),
+//     });
 
-    const message = await response.text();
-    alert(message);
-});
+//     const message = await response.text();
+//     alert(message);
+// });
 
 // Delete Todo
 document.getElementById('todoList').addEventListener('click', async (e) => {
-    console.log("hello 1");
+    
     if (e.target.classList.contains('delete-task')) {
         e.preventDefault();
         const name = document.getElementById('searchInput').value;
         const todo = e.target.dataset.todo;
         const checked = e.target.checked;
-console.log("hello");
+
         const response = await fetch('/update', {
-            method: 'PUT',
+            method: 'delete',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, todo }),
         });
@@ -131,5 +150,24 @@ console.log("hello");
 
         alert(message);
         e.target.parentElement.remove();
+    }
+    if (e.target.classList.contains('checkBoxes')) {
+        const name = document.getElementById('searchInput').value;
+        const todo = e.target.dataset.todo;
+        const checked = e.target.checked;
+
+        const response = await fetch('/updateTodo', {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, todo, checked }),
+        });
+
+        const message = await response.text();
+        if (!response.ok) {
+            alert(message);
+            return;
+        }
+
+        alert(message);
     }
 });
